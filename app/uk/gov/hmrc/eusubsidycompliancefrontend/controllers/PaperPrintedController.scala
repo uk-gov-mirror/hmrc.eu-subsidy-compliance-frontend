@@ -31,20 +31,19 @@ import uk.gov.hmrc.eusubsidycompliancefrontend.views.html.nace.manufacturing.pap
 
 import javax.inject.Inject
 
-class PaperPrintedController @Inject()(
-                                             mcc: MessagesControllerComponents,
-                                             actionBuilders: ActionBuilders,
-                                             val store: Store,
-                                             navigator: Navigator,
-                                             ArticlesPaperPaperboardLvl4Page: ArticlesPaperPaperboardLvl4Page,
-                                             PaperLvl3Page: PaperLvl3Page,
-                                             PrintedLvl3Page: PrintedLvl3Page,
-                                             PrintingServicesLvl4Page: PrintingServicesLvl4Page,
-                                             PulpPaperPaperboardLvl4Page: PulpPaperPaperboardLvl4Page,
-
-                                           )(implicit
-                                             val appConfig: AppConfig
-                                           ) extends BaseController(mcc){
+class PaperPrintedController @Inject() (
+  mcc: MessagesControllerComponents,
+  actionBuilders: ActionBuilders,
+  val store: Store,
+  navigator: Navigator,
+  ArticlesPaperPaperboardLvl4Page: ArticlesPaperPaperboardLvl4Page,
+  PaperLvl3Page: PaperLvl3Page,
+  PrintedLvl3Page: PrintedLvl3Page,
+  PrintingServicesLvl4Page: PrintingServicesLvl4Page,
+  PulpPaperPaperboardLvl4Page: PulpPaperPaperboardLvl4Page
+)(implicit
+  val appConfig: AppConfig
+) extends BaseController(mcc) {
 
   import actionBuilders._
 
@@ -54,90 +53,85 @@ class PaperPrintedController @Inject()(
   private val PrintingServicesLvl4Form: Form[FormValues] = formWithSingleMandatoryField("printing4")
   private val PulpPaperPaperboardLvl4Form: Form[FormValues] = formWithSingleMandatoryField("pulp4")
 
-
-
-  def loadArticlesPaperPaperboardLvl4Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def loadArticlesPaperPaperboardLvl4Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     Ok(ArticlesPaperPaperboardLvl4Page(ArticlesPaperPaperboardLvl4Form, mode)).toFuture
   }
 
-  def submitArticlesPaperPaperboardLvl4Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def submitArticlesPaperPaperboardLvl4Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     implicit val eori: EORI = request.eoriNumber
     ArticlesPaperPaperboardLvl4Form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(ArticlesPaperPaperboardLvl4Page(formWithErrors, mode)).toFuture,
-        form =>{
+        form => {
           store.update[UndertakingJourney](_.setUndertakingSector(Sector.withName(form.value).id))
           Redirect(navigator.nextPage(form.value, mode)).toFuture
         }
       )
   }
 
-
-  def loadPaperLvl3Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def loadPaperLvl3Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     Ok(PaperLvl3Page(PaperLvl3Form, mode)).toFuture
   }
 
-  def submitPaperLvl3Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def submitPaperLvl3Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     implicit val eori: EORI = request.eoriNumber
     PaperLvl3Form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(PaperLvl3Page(formWithErrors, mode)).toFuture,
-        form =>{
+        form => {
           store.update[UndertakingJourney](_.setUndertakingSector(form.value.toInt))
           Redirect(navigator.nextPage(form.value, mode)).toFuture
         }
       )
   }
 
-  def loadPrintedLvl3Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def loadPrintedLvl3Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     Ok(PrintedLvl3Page(PrintedLvl3Form, mode)).toFuture
   }
 
-  def submitPrintedLvl3Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def submitPrintedLvl3Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     implicit val eori: EORI = request.eoriNumber
     PrintedLvl3Form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(PrintedLvl3Page(formWithErrors, mode)).toFuture,
-        form =>{
+        form => {
           store.update[UndertakingJourney](_.setUndertakingSector(Sector.withName(form.value).id))
           Redirect(navigator.nextPage(form.value, mode)).toFuture
         }
       )
   }
 
-
-
-  def loadPrintingServicesLvl4Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def loadPrintingServicesLvl4Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     Ok(PrintingServicesLvl4Page(PrintingServicesLvl4Form, mode)).toFuture
   }
 
-  def submitPrintingServicesLvl4Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def submitPrintingServicesLvl4Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     implicit val eori: EORI = request.eoriNumber
     PrintingServicesLvl4Form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(PrintingServicesLvl4Page(formWithErrors, mode)).toFuture,
-        form =>{
+        form => {
           store.update[UndertakingJourney](_.setUndertakingSector(Sector.withName(form.value).id))
           Redirect(navigator.nextPage(form.value, mode)).toFuture
         }
       )
   }
 
-  def loadPulpPaperPaperboardLvl4Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def loadPulpPaperPaperboardLvl4Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     Ok(PulpPaperPaperboardLvl4Page(PulpPaperPaperboardLvl4Form, mode)).toFuture
   }
 
-  def submitPulpPaperPaperboardLvl4Page(mode: String) : Action[AnyContent] = enrolled.async { implicit request =>
+  def submitPulpPaperPaperboardLvl4Page(mode: String): Action[AnyContent] = enrolled.async { implicit request =>
     implicit val eori: EORI = request.eoriNumber
     PulpPaperPaperboardLvl4Form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(PulpPaperPaperboardLvl4Page(formWithErrors, mode)).toFuture,
-        form =>{
+        form => {
           store.update[UndertakingJourney](_.setUndertakingSector(Sector.withName(form.value).id))
           Redirect(navigator.nextPage(form.value, mode)).toFuture
         }

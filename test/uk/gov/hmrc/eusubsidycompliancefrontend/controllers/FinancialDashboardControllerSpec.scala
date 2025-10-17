@@ -98,7 +98,7 @@ class FinancialDashboardControllerSpec
           )
 
         status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe page(summaryData)(request, messages, instanceOf[AppConfig]).toString()
+        contentAsString(result) shouldBe page(summaryData, "A")(request, messages, instanceOf[AppConfig]).toString()
 
         val data = contentAsString(result)
         val document = Jsoup.parse(data)
@@ -157,7 +157,7 @@ class FinancialDashboardControllerSpec
 
       status(result) shouldBe Status.OK
       val data = contentAsString(result)
-      data shouldBe page(summaryData)(request, messages, instanceOf[AppConfig]).toString()
+      data shouldBe page(summaryData, "A")(request, messages, instanceOf[AppConfig]).toString()
       val document = Jsoup.parse(data)
       document.getElementById("SectorCapId").text() shouldBe "Sector cap (Agriculture)"
 
