@@ -99,10 +99,8 @@ class AgricultureController @Inject() (
             val previousLevel4 = previousCode
 
             if (previousLevel3 == form.value && journey.mode == "NewRegChangeMode") {
-              // No change made - go back to CYA with the original Level 4 code
               Redirect(routes.NACECheckDetailsController.getCheckDetails(previousLevel4)).toFuture
             } else {
-              // Change made - continue to Level 4, reset mode
               store.update[UndertakingJourney](_.copy(mode = "NewRegMode")).flatMap { _ =>
                 Redirect(navigator.nextPage(form.value, "NewRegMode")).toFuture
               }
@@ -137,10 +135,8 @@ class AgricultureController @Inject() (
             val previousCode = journey.sector.value.map(_.toString).getOrElse("")
 
             if (previousCode == form.value && journey.mode == "NewRegChangeMode") {
-              // No change - return to CYA
               Redirect(routes.NACECheckDetailsController.getCheckDetails(form.value)).toFuture
             } else {
-              // Change made OR first time - save and go to CYA
               for {
                 _ <- store.update[UndertakingJourney](_.setUndertakingSector(Sector.withName(form.value).id))
                 _ <- store.update[UndertakingJourney](_.copy(mode = "NewRegMode"))
@@ -176,7 +172,6 @@ class AgricultureController @Inject() (
             val previousCode = journey.sector.value.map(_.toString).getOrElse("")
 
             if (previousCode == form.value && journey.mode == "NewRegChangeMode") {
-              // No change - return to CYA
               Redirect(routes.NACECheckDetailsController.getCheckDetails(form.value)).toFuture
             } else {
               for {
@@ -214,7 +209,6 @@ class AgricultureController @Inject() (
             val previousCode = journey.sector.value.map(_.toString).getOrElse("")
 
             if (previousCode == form.value && journey.mode == "NewRegChangeMode") {
-              // No change - return to CYA
               Redirect(routes.NACECheckDetailsController.getCheckDetails(form.value)).toFuture
             } else {
               for {
@@ -252,10 +246,8 @@ class AgricultureController @Inject() (
             val previousCode = journey.sector.value.map(_.toString).getOrElse("")
 
             if (previousCode == form.value && journey.mode == "NewRegChangeMode") {
-              // No change - return to CYA
               Redirect(routes.NACECheckDetailsController.getCheckDetails(form.value)).toFuture
             } else {
-              // Change made OR first time - save and go to CYA
               for {
                 _ <- store.update[UndertakingJourney](_.setUndertakingSector(Sector.withName(form.value).id))
                 _ <- store.update[UndertakingJourney](_.copy(mode = "NewRegMode"))
@@ -291,10 +283,8 @@ class AgricultureController @Inject() (
             val previousCode = journey.sector.value.map(_.toString).getOrElse("")
 
             if (previousCode == form.value && journey.mode == "NewRegChangeMode") {
-              // No change - return to CYA
               Redirect(routes.NACECheckDetailsController.getCheckDetails(form.value)).toFuture
             } else {
-              // Change made OR first time - save and go to CYA
               for {
                 _ <- store.update[UndertakingJourney](_.setUndertakingSector(Sector.withName(form.value).id))
                 _ <- store.update[UndertakingJourney](_.copy(mode = "NewRegMode"))
@@ -332,10 +322,8 @@ class AgricultureController @Inject() (
             val previousLevel4 = previousCode
 
             if (previousLevel3 == form.value && journey.mode == "NewRegChangeMode") {
-              // No change made - go back to CYA with the original Level 4 code
               Redirect(routes.NACECheckDetailsController.getCheckDetails(previousLevel4)).toFuture
             } else {
-              // Change made - continue to Level 4, reset mode
               store.update[UndertakingJourney](_.copy(mode = "NewRegMode")).flatMap { _ =>
                 Redirect(navigator.nextPage(form.value, "NewRegMode")).toFuture
               }
@@ -370,10 +358,8 @@ class AgricultureController @Inject() (
             val previousCode = journey.sector.value.map(_.toString).getOrElse("")
 
             if (previousCode == form.value && journey.mode == "NewRegChangeMode") {
-              // No change - return to CYA
               Redirect(routes.NACECheckDetailsController.getCheckDetails(form.value)).toFuture
             } else {
-              // Change made OR first time - save and go to CYA
               for {
                 _ <- store.update[UndertakingJourney](_.setUndertakingSector(Sector.withName(form.value).id))
                 _ <- store.update[UndertakingJourney](_.copy(mode = "NewRegMode"))
@@ -409,7 +395,6 @@ class AgricultureController @Inject() (
             val previousCode = journey.sector.value.map(_.toString).getOrElse("")
 
             if (previousCode == form.value && journey.mode == "NewRegChangeMode") {
-              // No change - return to CYA
               Redirect(routes.NACECheckDetailsController.getCheckDetails(form.value)).toFuture
             } else {
               for {
