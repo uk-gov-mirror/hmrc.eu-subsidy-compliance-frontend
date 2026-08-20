@@ -193,7 +193,6 @@ class AccountController @Inject() (
     r: AuthenticatedEnrolledRequest[AnyContent]
   ) = {
     implicit val eori: EORI = r.eoriNumber
-
     if (undertaking.isManuallySuspended)
       Future.successful(Redirect(routes.UndertakingSuspendedPageController.showPage(undertaking.isLeadEORI(eori)).url))
     else {
@@ -205,26 +204,22 @@ class AccountController @Inject() (
 
       def dashboard: Future[Result] = {
         val today = timeProvider.today
-
         val lastSubmitted = undertaking.lastSubsidyUsageUpdt.orElse(undertakingSubsidies.lastSubmitted)
         val isTimeToReport = ReportReminderHelpers.isTimeToReport(lastSubmitted, today)
         val dueDate = ReportReminderHelpers.dueDateToReport(lastSubmitted.getOrElse(today)).toDisplayFormat
         val isOverdue = ReportReminderHelpers.isOverdue(lastSubmitted, today)
         val isSuspended = undertaking.isAutoSuspended
         val startDate = today.toEarliestTaxYearStart
-
         val summary = FinancialDashboardSummary.fromUndertakingSubsidies(
           undertaking,
           undertakingSubsidies,
           balance,
           today
         )
-
         def updateNilReturnJourney(n: NilReturnJourney): Future[NilReturnJourney] = {
           if (n.displayNotification) store.update[NilReturnJourney](e => e.copy(displayNotification = false))
           else n.toFuture
         }
-
         var agriOtherFlag: Boolean = true
         if (undertaking.industrySector.toString.take(2).equals(Sector.FishingAndAquaculture.toString)) {
           agriOtherFlag = false
@@ -257,7 +252,6 @@ class AccountController @Inject() (
           )
           result.getOrElse(handleMissingSessionData("Nil Return Journey"))
         } else {
-          // SCP22: check if admin has validated all beneficiary IDs for the undertaking
           escService
             .beneficiaryIDValidate(
               BeneficiaryIDRequest(
@@ -294,29 +288,31 @@ class AccountController @Inject() (
               case _ =>
                 Future.successful(Redirect(routes.CannotUseServiceContactAdministratorController.show()))
             }
-
         }
       }
 
       if (undertaking.isLeadEORI(eori))
-        escService
-          .beneficiaryIDValidate(
-            BeneficiaryIDRequest(idType = "UTID", idValue = s"$eori", requestType = "R", beneficiaryInfo = None)
-          )
-          .flatMap {
-            // SCP22: if any EORI with a known ID has validated=false, route to confirm page. EORIs without an ID (benIDType undefined) are excluded — they are need-registration cases, not confirm cases.
-            case Right(None) => needRegistrationRedirect
-            case Right(Some(resp)) if resp.beneficiaryInfo.exists(_.exists(bi => !bi.benIDType.isDefined)) =>
-              needRegistrationRedirect
-            case Right(Some(resp))
-                if resp.beneficiaryInfo.exists(
-                  _.exists(bi => bi.benIDType.isDefined && bi.validated.contains(false))
-                ) =>
-              Future.successful(Redirect(routes.ConfirmBusinessDetailsController.showPage()))
-            case _ => dashboard
-          }
+        store.get[UndertakingJourney].flatMap {
+          case Some(j) if j.isSubmitted =>
+            store.delete[UndertakingJourney].flatMap(_ => dashboard)
+          case _ =>
+            escService
+              .beneficiaryIDValidate(
+                BeneficiaryIDRequest(idType = "UTID", idValue = s"$eori", requestType = "R", beneficiaryInfo = None)
+              )
+              .flatMap {
+                case Right(None) => needRegistrationRedirect
+                case Right(Some(resp)) if resp.beneficiaryInfo.exists(_.exists(bi => !bi.benIDType.isDefined)) =>
+                  needRegistrationRedirect
+                case Right(Some(resp))
+                    if resp.beneficiaryInfo.exists(
+                      _.exists(bi => bi.benIDType.isDefined && bi.validated.contains(false))
+                    ) =>
+                  Future.successful(Redirect(routes.ConfirmBusinessDetailsController.showPage()))
+                case _ => dashboard
+              }
+        }
       else dashboard
-
     }
   }
 }
